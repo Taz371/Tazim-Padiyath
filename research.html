@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Research | Tazim Padiyath</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <!-- Navigation -->
+  <header>
+    <nav>
+      <ul>
+        <li><a href="index.html#about">About</a></li>
+        <li><a href="index.html#projects">Projects</a></li>
+        <li><a href="index.html#experience">Experience</a></li>
+        <li><a href="index.html#skills">Skills</a></li>
+        <li><a href="index.html#contact">Contact</a></li>
+        <li><a href="research.html" class="active">Research</a></li>
+      </ul>
+    </nav>
+    <div class="hero">
+      <h1>Research</h1>
+      <p>Exploring algorithms and AI concepts</p>
+    </div>
+  </header>
+
+  <!-- Research Topics -->
+  <section id="research" class="section-dark">
+    <h2>My Research</h2>
+    <div class="projects-container">
+
+      <div class="project-card">
+        <h3>Q-Learning</h3>
+        <p>Research on reinforcement learning with Q-Learning. I’ll share my blackjack agent experiments and future improvements.</p>
+        <a href="#qlearning-details">Read More</a>
+      </div>
+      
+    </div>
+  </section>
+
+  <!-- Q-Learning Details -->
+<section id="qlearning-details" class="section-light">
+  <h2>Q-Learning</h2>
+
+  <p>Hello everyone, I created a Blackjack RL AI that learns to play a basic variation of blackjack through trial and error using Q learning. I wanted to document how it works as a way of reinforcing what I learned and help you understand how Q learning works too. Don’t mind the informal nature of this paper, I wanted to make sure that you understand it.</p>
+
+  <p>Ok so let’s get into it! First of all, what is Q-learning??? Well, to put it simply, it is a way for an agent to learn the best actions by trying things out and recording how good these actions were in a Q-Table. A Q-Table is just a dictionary that stores how good each choice is for every situation/state it can be in.</p>
+
+  <p>Now that we know what Q learning is, how do we make a basic blackjack AI? Before we start, we must understand what variables we need to create and what they do.</p>
+
+  <img src="variables.png" alt="Variables image" style="margin-bottom: 20px; max-width: 100%;">
+
+  <ul>
+    <li><strong>Epsilon:</strong> The epsilon value could also be called the agent’s exploration rate. The higher this value is, the more random the agent’s behaviour will be. We will see how later in the code.</li>
+    <li><strong>Epsilon Min:</strong> This just limits how low the epsilon value can get so that the agent will always sometimes explore to get better.</li>
+    <li><strong>Epsilon Decay:</strong> This is multiplied by the epsilon value to give the new epsilon value. This is to exploit in the future, so instead of the agent being random, it makes good decisions.</li>
+    <li><strong>Alpha:</strong> You could call this the learning rate. It controls how much new information overrides old knowledge. Now this will probably seem confusing at first, but as we go through the code you will see how it is used.</li>
+    <li><strong>Gamma:</strong> This could be known as how patient the agent is. If it is close to 0, the agent will only care about immediate rewards; if it is close to 1, the agent will care about future rewards.</li>
+  </ul>
+
+  <p>Okay, so now we know what each variable is, let's carry on.</p>
+
+  <img src="get_q.png" alt="Next functions image" style="margin-bottom: 20px; max-width: 100%;">
+  <img src="update.png" alt="Next functions image" style="margin-bottom: 20px; max-width: 100%;">
+
+  <p>Above are the next two functions that I wrote in the class BlackjackAgent. First of all, to really convey how this agent works, let me show you what the Q table would look like after the AI plays a couple rounds of blackjack.</p>
+
+  <img src="q_table.png" alt="Q-Table after a few rounds" style="margin-bottom: 20px; max-width: 100%;">
+
+  <p>As you can see, if its hand is 15, it already knows that it is slightly better to stay than to hit.</p>
+
+  <p>Let’s now go through the update function to see how it works. First of all, update will be called after the agent has hit or stayed. For the purpose of this, let’s say that the agent stayed on a hand sum of 15 and won. Update is called and the parameters are <strong>hand_sum = 15, action = 0 (stay), reward = 1 (win)</strong>. First, the function gets the q values of the hand sum 15. It does this by calling the <strong>get_q</strong> function. All this does is return the q values of a certain hand sum and, if the hand sum is not present in the q table, it just adds it.</p>
+
+  <p>So now the value q_values = [0.3, -0.1] as shown by the table above. If the value of <strong>next_sum</strong> is not specified when update is called, it automatically gives it the value <strong>None</strong>. So now q_values[action] = q_values[0] = 0.3. q_values[0] will now be updated to 0.3 + 0.5 * (1-0.3) = 0.65. So, as you can see, the stay q value of the hand sum 15 increases, telling the agent it is better to stay when it has the value of 15 present. The value alpha here is 0.5, but if the value was higher the q_value[action] will be updated to a higher value, whereas if the value of alpha was lower it will updated to a lower value. Therfore alpha practically decides how quick the agent can learn.</p>
+
+  <p>Now you might be wondering, what is next_sum and when would it not be None? Well, next_sum just tells us whether the game is still going on, like when the agent hits, we still need to update the q table, but the game is still going on. Now let’s walk through what would happen if the agent decided to hit on a 7.</p>
+
+  <img src="while.png" alt="Agent hit example image" style="margin-bottom: 20px; max-width: 100%;">
+
+  <p>Above is the block of code used to train the agent. I thought it would be good for you to see this to understand how it works. Let’s say the agent got dealt a 7, so <strong>player_sum = 7</strong>. Currently <strong>prev_sum</strong> and <strong>prev_action</strong> are None. We use prev_sum and prev_action because we update the Q-value of the previous state after seeing the next card. So, first of all, an action is decided using the <strong>select_action</strong> function. I will get into that later as that is how the agent exploits. The action is 1 (hit). A card is added to the player’s hand and prev_sum and prev_action become equal to the player_sum and the action.</p>
+
+  <p>Now as this is a while loop, we go back to the top. The player_sum is recalculated as a new card is added. If the player_sum is greater than 21, then a reward of -1 is given and the Q table is updated. For this example, 8 is added to the agent’s hand, so its player_sum is 15. Since prev_sum is not None, the q table is updated. The parameters given this time to update are <strong>hand_sum = 7, action = 1, reward = 0, next_sum = 15</strong>. The reward is 0 as the agent hit.</p>
+
+  <p>This time the q table is updated using the Bellman equation. The difference between this equation and the one we previously used is the use of <strong>gamma</strong>, or the agent’s “patience,” which makes it care about the future reward as well. Now let’s walk through it together. First, the q values of the hand sum 7 are retrieved, which are [-0.4, 0.8]. As next_sum is not None, we go into the Bellman equation. q_values[action] = q_values[1] = 0.8. q_values[1] then gets updated to 0.8 + (0.5 * (0 + 0.9 * 0.3 – 0.8)) = 0.535. So, the q value for hit on the hand sum 7 goes from 0.8 to 0.535.</p>
+
+  <p>Now this is weird, isn’t it, as we as humans know that you should always hit on a 7, yet the q value for hitting decreases. Even though hitting led to 15 (which might seem good), the Q-value decreases slightly because the best Q-value of the next state (0.3) is less than the current guess (0.8). The agent is gradually learning the true expected value of hitting on 7. In simple terms, the agent thought hitting 7 was very good (0.8), but after seeing what actually happens next (best future reward = 0.3), it realizes hitting isn’t as great as it thought. So, it adjusts its Q-value downward.</p>
+
+  <p>Finally, let’s get into one of my favourite aspects of the project. How does the agent exploit??? As in, how does it use the q table to its advantage after playing the game so many times? The answer is quite simple, but I thought it was really cool.</p>
+
+  <img src="select_action.png" alt="Select action code image" style="margin-bottom: 20px; max-width: 100%;">
+
+  <p>Above is the block of code used by the agent to decide whether to hit or stay. This is where the value of <strong>epsilon</strong> is very important. Initially, our value of epsilon was quite high at a value of 1. Therefore, the agent will literally just make random choices at first, expanding its q table and knowledge. As the epsilon value decreases due to us decaying it after each game, the agent starts to exploit. By the way, this is why we decay the epsilon values, so that the agent slowly gets smarter.</p>
+
+  <p>As you know, the q table stores how good it is to hit or stay on a certain hand. Let’s use another example. Say that the agent gets dealt a 19, and the q table is the same as the one above. So, the q values of 19 are [0.5, -0.7]. The select_action function will return the index with the highest value. So, in this example it will return index 0 as 0.5 > -0.7, and as we know 0 is stay and 1 is hit, so the agent will stay.</p>
+
+  <p>This fascinated me as it was a simple way of exploiting the information gained after just playing the game a lot of times.</p>
+
+  <p><strong>Summary:</strong><br>
+  After creating this simple agent, I trained it using around 100,000 episodes. You could clearly see it getting better and making smarter decisions every 10,000 episodes. After this, I then started to look into computer vision and machine learning models. I ended up finding a playing card recognition model online and training it myself on my computer, which took 8 hours. I was then able to place cards in front of my webcam, and the agent could play, which was quite surreal.</p>
+
+</section>
+
+  <footer>
+    <p>&copy; 2025 Tazim Padiyath</p>
+  </footer>
+</body>
+</html>
