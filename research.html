@@ -82,7 +82,7 @@
 
   <p>Now as this is a while loop, we go back to the top. The player_sum is recalculated as a new card is added. If the player_sum is greater than 21, then a reward of -1 is given and the Q table is updated. For this example, 8 is added to the agent’s hand, so its player_sum is 15. Since prev_sum is not None, the q table is updated. The parameters given this time to update are <strong>hand_sum = 7, action = 1, reward = 0, next_sum = 15</strong>. The reward is 0 as the agent hit.</p>
 
-  <p>This time the q table is updated using the Bellman equation. The difference between this equation and the one we previously used is the use of <strong>gamma</strong>, or the agent’s “patience,” which makes it care about the future reward as well. Now let’s walk through it together. First, the q values of the hand sum 7 are retrieved, which are [-0.4, 0.8]. As next_sum is not None, we go into the Bellman equation. q_values[action] = q_values[1] = 0.8. q_values[1] then gets updated to 0.8 + (0.5 * (0 + 0.9 * 0.3 – 0.8)) = 0.535. So, the q value for hit on the hand sum 7 goes from 0.8 to 0.535.</p>
+  <p>The Q-table is updated using the Temporal Difference (TD) learning rule, which uses the Bellman equation as the target. This means the agent adjusts its current guess toward the expected future reward. The difference between this equation and the one we previously used is the use of <strong>gamma</strong>, or the agent’s “patience,” which makes it care about the future reward as well. Now let’s walk through it together. First, the q values of the hand sum 7 are retrieved, which are [-0.4, 0.8]. As next_sum is not None, we go into the TD equation. q_values[action] = q_values[1] = 0.8. q_values[1] then gets updated to 0.8 + (0.5 * (0 + 0.9 * 0.3 – 0.8)) = 0.535. So, the q value for hit on the hand sum 7 goes from 0.8 to 0.535.</p>
 
   <p>Now this is weird, isn’t it, as we as humans know that you should always hit on a 7, yet the q value for hitting decreases. Even though hitting led to 15 (which might seem good), the Q-value decreases slightly because the best Q-value of the next state (0.3) is less than the current guess (0.8). The agent is gradually learning the true expected value of hitting on 7. In simple terms, the agent thought hitting 7 was very good (0.8), but after seeing what actually happens next (best future reward = 0.3), it realizes hitting isn’t as great as it thought. So, it adjusts its Q-value downward.</p>
 
@@ -106,3 +106,4 @@
   </footer>
 </body>
 </html>
+
